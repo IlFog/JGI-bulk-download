@@ -9,17 +9,16 @@ def user_login(exit_command: str = 'q') -> dict:
     """
     Prompt the user for JGI credentials and return a dictionary with keys 'username' and 'password'.
     """
-    while True:
-        user = input("Insert JGI username/email or {} to exit: ".format(exit_command))
-        if user == exit_command:
-            return {'username': None, 'password': None}
+    user = input("Insert JGI username/email or {} to exit: ".format(exit_command))
+    if user == exit_command:
+        return {'username': None, 'password': None}
 
-        pw = getpass.getpass("Insert JGI password or {} to exit:".format(exit_command))
-        if pw == exit_command:
-            return {'username': None, 'password': None}
+    pw = getpass.getpass("Insert JGI password or {} to exit:".format(exit_command))
+    if pw == exit_command:
+        return {'username': None, 'password': None}
 
-        if validate_credentials(user, pw):
-            break
+        #if validate_credentials(user, pw):
+        #    break
 
     return {'username': user, 'password': pw}
 
