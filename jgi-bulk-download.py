@@ -1,31 +1,41 @@
+from typing import List
 import argparse
 import getpass
 import pandas as pd
 import subprocess
 import sys
 
-def user_login():
+def user_login(exit_command: str = 'q') -> dict:
     """
-    Prompt the user for JGI credentials.
+    Prompt the user for JGI credentials and return a dictionary with keys 'username' and 'password'.
     """
-    user = input("Insert JGI username/email or q to exit: ")
-    if user == "q":
-        sys.exit("Exiting now.")
+    while True:
+        user = input("Insert JGI username/email or {} to exit: ".format(exit_command))
+        if user == exit_command:
+            return {'username': None, 'password': None}
 
-    pw = getpass.getpass("Insert JGI password or q to exit:")
-    if pw == "q":
-        sys.exit("Exiting now.")
-    
-    return user, pw
+        pw = getpass.getpass("Insert JGI password or {} to exit:".format(exit_command))
+        if pw == exit_command:
+            return {'username': None, 'password': None}
 
-def load_urls(filepath):
+        if validate_credentials(user, pw):
+            break
+
+    return {'username': user, 'password': pw}
+
+def load_urls(filepath: str) -> List[str]:
     """
     Load URLs from a CSV file.
+
+    Args:
+        filepath (str): The path to the CSV file.
+
+    Returns:
+        List[str]: A list of URLs extracted from the CSV file.
     """
     try:
         data = pd.read_csv(filepath)
-        data["portal"] = data["JGI Contigs Link"].str.split("/").str[4]
-        urls = data["portal"].dropna().tolist()
+        urls = data["JGI Contigs Link"].str.split("/").str[4].dropna().tolist()
         return urls
     except FileNotFoundError:
         sys.exit(f"File not found: {filepath}")
